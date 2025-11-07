@@ -45,19 +45,18 @@ func calculateAvailability() float64 {
 	total := &dto.Metric{}
 	success := &dto.Metric{}
 
-	err := RequestsTotal.Write(total)
-	if err != nil {
+	if err := RequestsTotal.Write(total); err != nil || total.Counter == nil {
 		return 0
 	}
 
-	err = RequestsSuccess.Write(success)
-	if err != nil {
+	if err := RequestsSuccess.Write(success); err != nil || success.Counter == nil {
 		return 0
 	}
 
-	if total.Counter.GetValue() == 0 {
+	totalVal := total.Counter.GetValue()
+	if totalVal == 0 {
 		return 0
 	}
 
-	return (success.Counter.GetValue() / total.Counter.GetValue()) * 100
+	return (success.Counter.GetValue() / totalVal) * 100
 }
