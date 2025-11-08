@@ -34,6 +34,7 @@ func NewMonitor(cfg *config.Config) *Monitor {
 	logDir := "logs"
 	os.MkdirAll(logDir, 0755)
 
+	//default log file path "./logs/monitoring.log"
 	logPath := filepath.Join(logDir, "monitoring.log")
 	file, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
 	if err != nil {
@@ -54,6 +55,7 @@ func (m *Monitor) Start(ctx context.Context) {
 	defer ticker.Stop()
 	defer m.Close()
 
+	// either context is done or ticker ticks
 	for {
 		select {
 		case <-ctx.Done():
@@ -64,7 +66,7 @@ func (m *Monitor) Start(ctx context.Context) {
 	}
 }
 
-// Close flushes remaining logs and closes the file
+// save remaining logs and close the log file
 func (m *Monitor) Close() {
 	m.mu.Lock()
 	defer m.mu.Unlock()
@@ -91,6 +93,7 @@ func (m *Monitor) GetRecentLogs(limit int) []FailureLog {
 		return result
 	}
 
+	// return the last 'limit' logs
 	n := min(len(m.logs), limit)
 	start := len(m.logs) - n
 	result := make([]FailureLog, limit)
@@ -114,8 +117,10 @@ func (m *Monitor) CheckEndpoint() {
 
 	isSuccess := resp.StatusCode == m.cfg.ExpectedStatusCode
 
+	// record the request result
 	RecordRequest(isSuccess)
 
+	// if not success, log the failure
 	if !isSuccess {
 		m.logFailure(resp.StatusCode, resp.Status)
 	}
@@ -134,7 +139,7 @@ func (m *Monitor) logFailure(status int, errMsg string) {
 	m.mu.Lock()
 	defer m.mu.Unlock()
 
-	// If we have 10 or more logs, write oldest to file
+	// If already have 10 or more logs, write oldest to file
 	if len(m.logs) >= 10 {
 		oldEntry := m.logs[0]
 		m.logs = m.logs[1:]

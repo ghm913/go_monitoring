@@ -49,11 +49,10 @@ func main() {
 		mon.Start(ctx)
 	}()
 
-	// Handle shutdown signals
 	sigChan := make(chan os.Signal, 1)
 	signal.Notify(sigChan, syscall.SIGINT, syscall.SIGTERM)
 
-	// Start server in goroutine
+	// Start server
 	go func() {
 		log.Printf("Starting server on :8080, monitoring %s", cfg.TargetURL)
 		if err := r.Run(":8080"); err != nil {

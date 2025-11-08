@@ -42,17 +42,17 @@ func RecordRequest(isSuccess bool) {
 		successRequests++
 	}
 
-	// Record with current timestamp
+	// Record request metrics
 	timestamp := time.Now().Format(time.RFC3339)
 	RequestsTotal.WithLabelValues(timestamp).Set(float64(totalRequests))
 	RequestsSuccess.WithLabelValues(timestamp).Set(float64(successRequests))
 
-	// Calculate total availability
+	// Calculate and record total availability
 	availability := float64(successRequests) / float64(totalRequests) * 100
 	AvailabilityPercent.WithLabelValues(timestamp).Set(availability)
 }
 
-// CalculateAvailability returns the current total availability percentage
+// the current availability percentage
 func CalculateAvailability() float64 {
 	if totalRequests == 0 {
 		return 0
