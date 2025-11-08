@@ -5,7 +5,6 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
-	dto "github.com/prometheus/client_model/go"
 
 	"ghm913/go_monitoring/services"
 )
@@ -32,14 +31,8 @@ func (h *Handler) SetupRoutes(router *gin.Engine) {
 
 // get current availability
 func (h *Handler) getAvailability(c *gin.Context) {
-	metric := &dto.Metric{}
-	if err := services.AvailabilityPercent.Write(metric); err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to get availability"})
-		return
-	}
-
 	c.JSON(http.StatusOK, gin.H{
-		"availability_percent": metric.GetGauge().GetValue(),
+		"availability_percent": services.CalculateAvailability(),
 	})
 }
 

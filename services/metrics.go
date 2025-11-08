@@ -1,62 +1,61 @@
 package services
 
 import (
+	"time"
+
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promauto"
-	dto "github.com/prometheus/client_model/go"
 )
 
 var (
-	// total requests
-	RequestsTotal = promauto.NewCounter(prometheus.CounterOpts{
+	// total requests with timestamp
+	RequestsTotal = promauto.NewGaugeVec(prometheus.GaugeOpts{
 		Namespace: "webpage",
 		Name:      "requests_total",
 		Help:      "Total number of requests made to the monitored webpage",
-	})
+	}, []string{"timestamp"})
 
-	// successful requests
-	RequestsSuccess = promauto.NewCounter(prometheus.CounterOpts{
+	// successful requests with timestamp
+	RequestsSuccess = promauto.NewGaugeVec(prometheus.GaugeOpts{
 		Namespace: "webpage",
 		Name:      "requests_success",
 		Help:      "Number of successful requests (matching expected status code)",
-	})
+	}, []string{"timestamp"})
 
-	// current availability percentage
-	AvailabilityPercent = promauto.NewGaugeFunc(
-		prometheus.GaugeOpts{
-			Namespace: "webpage",
-			Name:      "availability_percent",
-			Help:      "Current availability percentage (0-100)",
-		},
-		calculateAvailability,
-	)
+	// total availability percentage with timestamp
+	AvailabilityPercent = promauto.NewGaugeVec(prometheus.GaugeOpts{
+		Namespace: "webpage",
+		Name:      "availability_percent",
+		Help:      "Total availability percentage (0-100) at each timestamp",
+	}, []string{"timestamp"})
+)
+
+var (
+	totalRequests   int = 0
+	successRequests int = 0
 )
 
 // result of a single request
 func RecordRequest(isSuccess bool) {
-	RequestsTotal.Inc()
+	totalRequests++
 	if isSuccess {
-		RequestsSuccess.Inc()
+		successRequests++
 	}
+
+	// Record with current timestamp
+	timestamp := time.Now().Format(time.RFC3339)
+	RequestsTotal.WithLabelValues(timestamp).Set(float64(totalRequests))
+	RequestsSuccess.WithLabelValues(timestamp).Set(float64(successRequests))
+
+	// Calculate total availability
+	availability := float64(successRequests) / float64(totalRequests) * 100
+	AvailabilityPercent.WithLabelValues(timestamp).Set(availability)
 }
 
-// calculate current availability
-func calculateAvailability() float64 {
-	total := &dto.Metric{}
-	success := &dto.Metric{}
-
-	if err := RequestsTotal.Write(total); err != nil || total.Counter == nil {
+// CalculateAvailability returns the current total availability percentage
+func CalculateAvailability() float64 {
+	if totalRequests == 0 {
 		return 0
 	}
-
-	if err := RequestsSuccess.Write(success); err != nil || success.Counter == nil {
-		return 0
-	}
-
-	totalVal := total.Counter.GetValue()
-	if totalVal == 0 {
-		return 0
-	}
-
-	return (success.Counter.GetValue() / totalVal) * 100
+	return float64(successRequests) / float64(totalRequests) * 100
 }
