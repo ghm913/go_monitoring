@@ -10,11 +10,17 @@ This application is developed for continuously checking website availability and
 
 ## Start the application
 
-### 1. Configure the Target
+### 1. Install Dependencies
+
+```bash
+go mod download
+```
+
+### 2. Configure the Target
 
 Edit `config.yaml` to set the website you want to monitor:
 
-### 2. Run the Application
+### 3. Run the Application
 
 ```bash
 go run main.go
@@ -34,7 +40,7 @@ Total requests made, Successful requests, Overall availability percentage
 - **`GET /logs`** - Recent failure logs (last 10 entries by default), 
 Older logs/ remaining logs before shutdown are written to `logs/monitoring.log`
 
-### 3. Deploy Monitoring Stack (Optional)
+### 4. Deploy Monitoring Stack (Optional)
 
 Deploy Prometheus with Helm to visualize metrics:
 
@@ -50,7 +56,7 @@ helm upgrade --install monitoring-stack ./monitoring-stack --namespace monitorin
 kubectl get pods -n monitoring
 ```
 
-Every 10 seconds (configurable), the app checks the target URL
+Prometheus gets the target metrics every 10 seconds (configurable)
 
 **Access Prometheus UI:**
 ```bash
