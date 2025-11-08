@@ -9,7 +9,7 @@ import (
 )
 
 func TestMonitor(t *testing.T) {
-	// Clean up log file before test
+	// Clean up log file after test
 	defer os.RemoveAll("logs")
 
 	cfg := &config.Config{
