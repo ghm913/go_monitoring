@@ -1,6 +1,6 @@
 # Go Monitoring Application
 
-This application is developed for continuously checking website availability and exposes metrics for Prometheus. Logs failures are stored to local files.
+This application is developed for continuously checking website availability and exposes metrics for Prometheus. Logs failures are stored to local files for simplicity.
 
 ## Prerequisites
 
@@ -26,7 +26,7 @@ Edit `config.yaml` to set the website you want to monitor:
 go run main.go
 ```
 
-The app starts on port 8080.
+The app starts on port 8080.  visit localhost:8080/endpoint_name to access the endpoints.
 
 #### API Endpoints
 
@@ -35,7 +35,7 @@ The application exposes three HTTP endpoints:
 - **`GET /metrics`** - Metrics with timestamps and information:
 Total requests made, Successful requests, Overall availability percentage
 
-- **`GET /availability`** - Current availability
+- **`GET /availability`** - Current availability (by percentage)
 
 - **`GET /logs`** - Recent failure logs (last 10 entries by default), 
 Older logs/ remaining logs before shutdown are written to `logs/monitoring.log`
