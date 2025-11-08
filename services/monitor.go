@@ -31,9 +31,11 @@ type Monitor struct {
 }
 
 func NewMonitor(cfg *config.Config) *Monitor {
+	// change the log directory here (if needed)
 	logDir := "logs"
 	os.MkdirAll(logDir, 0755)
 
+	//change the log file name here (if needed)
 	//default log file path "./logs/monitoring.log"
 	logPath := filepath.Join(logDir, "monitoring.log")
 	file, err := os.OpenFile(logPath, os.O_CREATE|os.O_WRONLY|os.O_APPEND, 0644)
