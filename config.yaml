@@ -1,5 +1,5 @@
 # Configuration for webpage monitoring
-target_url: "https://mock.codes/200"
+target_url: "https://mock.codes/500"
 check_interval_seconds: 10
 timeout_seconds: 5
 expected_status_code: 200

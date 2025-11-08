@@ -31,7 +31,7 @@ Total requests made, Successful requests, Overall availability percentage
 
 - **`GET /availability`** - Current availability
 
-- **`GET /logs`** - Recent failure logs (last 10 entries), 
+- **`GET /logs`** - Recent failure logs (last 10 entries by default), 
 Older logs/ remaining logs before shutdown are written to `logs/monitoring.log`
 
 ### 3. Deploy Monitoring Stack (Optional)

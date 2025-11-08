@@ -38,6 +38,7 @@ func (h *Handler) getAvailability(c *gin.Context) {
 
 // most recent failure logs
 func (h *Handler) getLogs(c *gin.Context) {
-	logs := h.monitor.GetRecentLogs(20)
+	//change number of ouput logs here (if needed)
+	logs := h.monitor.GetRecentLogs(10)
 	c.JSON(http.StatusOK, gin.H{"logs": logs})
 }
