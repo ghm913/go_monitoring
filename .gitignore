@@ -30,3 +30,15 @@ go.work.sum
 # Editor/IDE
 # .idea/
 # .vscode/
+
+# Logs
+logs/
+*.log
+
+# Helm
+helm/monitoring-stack/charts/
+helm/monitoring-stack/Chart.lock
+
+# Build artifacts
+go_monitoring
+go_monitoring.exe

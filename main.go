@@ -5,6 +5,7 @@ import (
 	"log"
 	"os"
 	"os/signal"
+	"sync"
 	"syscall"
 
 	"github.com/gin-gonic/gin"
@@ -39,8 +40,14 @@ func main() {
 	ctx, cancel := context.WithCancel(context.Background())
 	defer cancel()
 
+	var wg sync.WaitGroup
+
 	// Start monitoring in background
-	go mon.Start(ctx)
+	wg.Add(1)
+	go func() {
+		defer wg.Done()
+		mon.Start(ctx)
+	}()
 
 	// Handle shutdown signals
 	sigChan := make(chan os.Signal, 1)
@@ -59,4 +66,8 @@ func main() {
 	<-sigChan
 	log.Println("Shutdown signal received")
 	cancel()
+
+	// Wait for monitor to finish and save logs
+	wg.Wait()
+	log.Println("Shutdown complete")
 }
