@@ -32,7 +32,7 @@ prometheus:
         - name: availability_alerts
           rules:
             - alert: AvailabilityDrop
-              expr: webpage_availability_percent < 95
+              expr: max(webpage_availability_percent) < 95
               for: 1m
               labels:
                 severity: warning
