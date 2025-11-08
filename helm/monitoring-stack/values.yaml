@@ -30,12 +30,12 @@ prometheus:
     rules.yml:
       groups:
         - name: availability_alerts
+          interval: 1m
           rules:
             - alert: AvailabilityDrop
-              expr: max(webpage_availability_percent) < 95
-              for: 1m
+              expr: avg without(timestamp) (avg_over_time(webpage_availability_percent[1m])) < 95
               labels:
                 severity: warning
               annotations:
                 summary: "Availability dropped below 95%"
-                description: "Current availability is below 95 percent"
+                description: "Average availability dropped below 95% in the last minute"
